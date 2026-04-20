@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BAI-4 Face Recognition Attendance System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #3457D5 0%, #2E4BB6 100%);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .header p {
+            margin-top: 8px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .reg-section {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .reg-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            align-items: stretch;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 14px 18px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #3457D5;
+            box-shadow: 0 0 0 3px rgba(52, 87, 213, 0.1);
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .btn-verify {
+            background: linear-gradient(135deg, #52c234 0%, #42a828 100%);
+            color: white;
+        }
+
+        .btn-verify:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(82, 194, 52, 0.4);
+        }
+
+        .class-info {
+            background: white;
+            border: 2px solid #e8ecf1;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .class-info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .class-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .class-status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-upcoming {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-ended {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-none {
+            background: #e2e3e5;
+            color: #6c757d;
+        }
+
+        .class-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .detail-icon {
+            font-size: 20px;
+        }
+
+        .detail-text {
+            font-size: 14px;
+            color: #495057;
+        }
+
+        .camera-section {
+            margin-bottom: 25px;
+        }
+
+        #videoContainer {
+            position: relative;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            max-width: 100%;
+            aspect-ratio: 4/3;
+        }
+
+        #video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #canvas {
+            display: none;
+        }
+
+        .status-message {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: 500;
+            display: none;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+
+        .status-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+
+        .actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn-capture {
+            background: linear-gradient(135deg, #3457D5 0%, #2E4BB6 100%);
+            color: white;
+            padding: 16px;
+            justify-content: center;
+        }
+
+        .btn-capture:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 87, 213, 0.4);
+        }
+
+        .btn-capture:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+            padding: 16px;
+            justify-content: center;
+        }
+
+        .btn-reset:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn-view {
+            background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
+            color: white;
+            padding: 16px;
+            justify-content: center;
+        }
+
+        .btn-view:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(81, 207, 102, 0.4);
+        }
+
+        .attendance-count {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 15px 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            color: #1976d2;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            width: 100%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .records-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .records-table th,
+        .records-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e8ecf1;
+        }
+
+        .records-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .records-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3457D5;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .input-group {
+                flex-direction: column;
+            }
+
+            .actions {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 BAI-4 Face Recognition Attendance System</h1>
+            <p>Spring 2024 - Department of Computer Science</p>
+        </div>
+
+        <div class="content">
+            <!-- Registration Section -->
+            <div class="reg-section">
+                <h3>🎓 Student Registration</h3>
+                <div class="input-group">
+                    <input 
+                        type="text" 
+                        id="regNumber" 
+                        placeholder="Enter your Registration Number (e.g., BAI4-001)"
+                    >
+                    <button class="btn btn-verify" onclick="verifyRegistration()">
+                        ✓ Verify
+                    </button>
+                </div>
+            </div>
+
+            <!-- Class Information -->
+            <div class="class-info">
+                <div class="class-info-header">
+                    <div class="class-title" id="className">Loading...</div>
+                    <div class="class-status status-none" id="classStatus">LOADING</div>
+                </div>
+                <div class="class-details">
+                    <div class="detail-item">
+                        <span class="detail-icon">🕐</span>
+                        <span class="detail-text" id="classTime">--:-- - --:--</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-icon">🏫</span>
+                        <span class="detail-text" id="classRoom">Room: ---</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-icon">👨‍🏫</span>
+                        <span class="detail-text" id="classInstructor">Instructor: ---</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-icon">⏰</span>
+                        <span class="detail-text" id="currentTime">Current Time: --:--:--</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Message -->
+            <div id="statusMessage" class="status-message"></div>
+
+            <!-- Camera Section -->
+            <div class="camera-section">
+                <div id="videoContainer">
+                    <video id="video" autoplay></video>
+                    <canvas id="canvas"></canvas>
+                </div>
+            </div>
+
+            <!-- Attendance Count -->
+            <div class="attendance-count" id="attendanceCount">
+                ✓ Today's Attendance: None
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="actions">
+                <button class="btn btn-capture" id="captureBtn" onclick="captureAttendance()">
+                    📸 Capture Attendance
+                </button>
+                <button class="btn btn-reset" onclick="resetAttendance()">
+                    🔄 Reset
+                </button>
+                <button class="btn btn-view" onclick="viewRecords()">
+                    📋 View Records
+                </button>
+            </div>
+
+            <!-- Loading Indicator -->
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p style="margin-top: 15px; color: #666;">Processing...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Records Modal -->
+    <div class="modal" id="recordsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📋 Attendance Records</h2>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div id="recordsContent"></div>
+        </div>
+    </div>
+
+    <script>
+        let video = document.getElementById('video');
+        let canvas = document.getElementById('canvas');
+        let attendanceMarked = new Set();
+        let isVerified = false;
+
+        // Start camera
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'user' } 
+                });
+                video.srcObject = stream;
+            } catch (err) {
+                showMessage('error', '❌ Camera access denied. Please allow camera access.');
+                console.error('Camera error:', err);
+            }
+        }
+
+        // Update class information
+        async function updateClassInfo() {
+            try {
+                const response = await fetch('/api/current-class');
+                const data = await response.json();
+
+                if (data.success) {
+                    const classInfo = data.class;
+                    document.getElementById('className').textContent = `📚 ${classInfo.course}`;
+                    document.getElementById('classTime').textContent = `${classInfo.start} - ${classInfo.end}`;
+                    document.getElementById('classRoom').textContent = `Room: ${classInfo.room}`;
+                    document.getElementById('classInstructor').textContent = classInfo.instructor;
+                    document.getElementById('currentTime').textContent = `Current: ${data.current_time}`;
+
+                    const statusEl = document.getElementById('classStatus');
+                    statusEl.className = 'class-status';
+                    
+                    if (data.status === 'IN_SESSION') {
+                        statusEl.classList.add('status-active');
+                        statusEl.textContent = '✅ CLASS IN SESSION';
+                    } else if (data.status === 'UPCOMING') {
+                        statusEl.classList.add('status-upcoming');
+                        statusEl.textContent = '⏳ UPCOMING CLASS';
+                    } else {
+                        statusEl.classList.add('status-ended');
+                        statusEl.textContent = '⏹️ CLASS ENDED';
+                    }
+                } else {
+                    document.getElementById('className').textContent = '📚 No Class Scheduled';
+                    document.getElementById('classTime').textContent = 'Free Time';
+                    document.getElementById('classRoom').textContent = 'Room: N/A';
+                    document.getElementById('classInstructor').textContent = 'No Instructor';
+                    document.getElementById('currentTime').textContent = `Current: ${data.current_time}`;
+                    
+                    const statusEl = document.getElementById('classStatus');
+                    statusEl.className = 'class-status status-none';
+                    statusEl.textContent = '📅 NO CLASS';
+                }
+            } catch (err) {
+                console.error('Error updating class info:', err);
+            }
+        }
+
+        // Verify registration
+        function verifyRegistration() {
+            const regNo = document.getElementById('regNumber').value.trim();
+            
+            if (!regNo) {
+                showMessage('warning', '⚠️ Please enter your registration number!');
+                return;
+            }
+
+            isVerified = true;
+            showMessage('success', `✓ Registration number ${regNo} verified! Ready to capture attendance.`);
+        }
+
+        // Capture attendance
+        async function captureAttendance() {
+            const regNo = document.getElementById('regNumber').value.trim();
+            
+            if (!regNo) {
+                showMessage('warning', '⚠️ Please enter your registration number first!');
+                return;
+            }
+
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('captureBtn').disabled = true;
+
+            try {
+                // Capture image from video
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0);
+                const imageData = canvas.toDataURL('image/jpeg');
+
+                // Send to server
+                const response = await fetch('/api/mark-attendance', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        image: imageData,
+                        registration_number: regNo
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const statusEmoji = data.status === 'On Time' ? '✅' : 
+                                       data.status === 'Late' ? '⏰' : '⚠️';
+                    
+                    showMessage('success', 
+                        `${statusEmoji} SUCCESS! Attendance marked for ${data.name} (${data.registration_number})<br>` +
+                        `Status: ${data.status} | Confidence: ${data.confidence}%<br>` +
+                        `Course: ${data.course}`
+                    );
+
+                    attendanceMarked.add(`${data.name} (${data.registration_number})`);
+                    updateAttendanceCount();
+                } else {
+                    showMessage('error', `❌ ${data.message}`);
+                }
+            } catch (err) {
+                showMessage('error', `❌ Error: ${err.message}`);
+                console.error('Capture error:', err);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('captureBtn').disabled = false;
+            }
+        }
+
+        // Reset attendance
+        function resetAttendance() {
+            attendanceMarked.clear();
+            document.getElementById('regNumber').value = '';
+            isVerified = false;
+            updateAttendanceCount();
+            showMessage('info', '🔄 Attendance reset! Ready to capture new attendance.');
+        }
+
+        // Update attendance count
+        function updateAttendanceCount() {
+            const count = attendanceMarked.size;
+            const countEl = document.getElementById('attendanceCount');
+            
+            if (count === 0) {
+                countEl.textContent = "✓ Today's Attendance: None";
+            } else {
+                countEl.textContent = `✓ Today's Attendance (${count}): ${Array.from(attendanceMarked).join(', ')}`;
+            }
+        }
+
+        // View records
+        async function viewRecords() {
+            document.getElementById('recordsModal').classList.add('active');
+            
+            try {
+                const response = await fetch('/api/attendance-records');
+                const data = await response.json();
+
+                if (data.success && data.records.length > 0) {
+                    let tableHTML = `
+                        <table class="records-table">
+                            <thead>
+                                <tr>
+                                    <th>Reg No</th>
+                                    <th>Name</th>
+                                    <th>Course</th>
+                                    <th>Room</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                    <th>Confidence</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+
+                    data.records.forEach(record => {
+                        tableHTML += `
+                            <tr>
+                                <td>${record['Registration No']}</td>
+                                <td>${record.Name}</td>
+                                <td>${record.Course}</td>
+                                <td>${record.Room}</td>
+                                <td>${record.Date}</td>
+                                <td>${record.Time}</td>
+                                <td>${record.Status}</td>
+                                <td>${record.Confidence}</td>
+                            </tr>
+                        `;
+                    });
+
+                    tableHTML += `
+                            </tbody>
+                        </table>
+                    `;
+
+                    document.getElementById('recordsContent').innerHTML = tableHTML;
+                } else {
+                    document.getElementById('recordsContent').innerHTML = 
+                        '<p style="text-align: center; padding: 40px; color: #999;">No attendance records found.</p>';
+                }
+            } catch (err) {
+                document.getElementById('recordsContent').innerHTML = 
+                    '<p style="text-align: center; padding: 40px; color: #dc3545;">Error loading records.</p>';
+                console.error('Records error:', err);
+            }
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('recordsModal').classList.remove('active');
+        }
+
+        // Show message
+        function showMessage(type, message) {
+            const messageEl = document.getElementById('statusMessage');
+            messageEl.className = `status-message status-${type}`;
+            messageEl.innerHTML = message;
+            messageEl.style.display = 'block';
+
+            setTimeout(() => {
+                messageEl.style.display = 'none';
+            }, 5000);
+        }
+
+        // Initialize
+        window.onload = function() {
+            startCamera();
+            updateClassInfo();
+            
+            // Update class info every second
+            setInterval(updateClassInfo, 1000);
+        };
+
+        // Close modal on outside click
+        document.getElementById('recordsModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
