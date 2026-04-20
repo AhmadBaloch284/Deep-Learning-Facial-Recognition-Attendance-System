@@ -91,12 +91,6 @@ The system consists of the following modules:
 - FaceNet (Google Research)  
 - DeepFace (Facebook AI)  
 - VGGFace Research  
-
----
-
-## 📷 Screenshots (Optional)
-_Add your GUI screenshots here_
-
 ---
 
 ## 🛠️ Installation
