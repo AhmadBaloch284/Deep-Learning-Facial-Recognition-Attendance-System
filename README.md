@@ -2,20 +2,20 @@
 
 ---
 
-## 📖 Overview
+## 📖Overview
 This project is an **AI-powered attendance system** that uses **facial recognition and deep learning (CNNs)** to automatically mark attendance in real time.  
 It eliminates manual processes and ensures **accuracy, security, and efficiency**.
 
 ---
 
 ## 🚀 Features
-- 📷 Real-time face detection using OpenCV  
-- 🧠 CNN-based facial recognition model  
-- 🗂️ Automatic attendance marking with timestamps  
-- 🛡️ Prevents proxy attendance  
-- 💾 SQLite database integration  
-- 🖥️ User-friendly GUI (KivyMD)  
-- ⚡ Fast detection (~0.2 sec/frame)  
+-  Real-time face detection using OpenCV  
+-  CNN-based facial recognition model  
+-  Automatic attendance marking with timestamps  
+-  Prevents proxy attendance  
+-  SQLite database integration  
+-  User-friendly GUI (KivyMD)  
+-  Fast detection (~0.2 sec/frame)  
 
 ---
 
@@ -52,10 +52,10 @@ The system consists of the following modules:
 ---
 
 ## 📊 Results
-- ✅ Training Accuracy: **99.09%**  
-- ✅ Validation Accuracy: **96.36%**  
-- ⚡ Detection Speed: **~0.2 sec/frame**  
-- 💯 Attendance Logging: **100% success**  
+-  Training Accuracy: **99.09%**  
+-  Validation Accuracy: **96.36%**  
+-  Detection Speed: **~0.2 sec/frame**  
+-  Attendance Logging: **100% success**  
 
 ---
 
